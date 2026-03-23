@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Termo de Depoimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-input, .form-textarea, .form-select {
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            --tw-ring-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 2px var(--tw-ring-color);
+            border-color: #3b82f6;
+        }
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #FFF;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #report-output::-webkit-scrollbar {
+            width: 8px;
+        }
+        #report-output::-webkit-scrollbar-track {
+            background: #f1f5f9; /* slate-100 */
+        }
+        #report-output::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* slate-400 */
+            border-radius: 4px;
+        }
+        #report-output::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Gerador de Termo de Depoimento</h1>
+            <p class="mt-2 text-lg text-slate-600">Preencha os dados e a IA criará o Termo de Depoimento para você.</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Formulário de Entrada -->
+            <div class="lg:w-1/2 bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                <form id="report-form" class="space-y-5">
+                    
+                    <div class="space-y-5 border-b border-slate-200 pb-6">
+                        <h2 class="text-xl font-semibold">Configuração do Termo</h2>
+                        <div>
+                            <label for="escrivao_select" class="block text-sm font-medium text-slate-700">Selecione o Escrivão(ã) de Polícia</label>
+                            <select id="escrivao_select" class="form-select mt-1 block w-full border-slate-300 rounded-lg shadow-sm">
+                                <option>Osvaldo Camilo Nogueira Almeida</option>
+                                <option>Davis de Souza Oliveira</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5 border-b border-slate-200 pb-6">
+                        <h2 class="text-xl font-semibold">Dados do Depoente</h2>
+                        <div>
+                            <label for="depoente_nome" class="block text-sm font-medium text-slate-700">Nome do Depoente</label>
+                            <input type="text" id="depoente_nome" data-label="Nome do Depoente" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Nome completo da testemunha">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="sm:col-span-2">
+                                <label for="depoente_rg_numero" class="block text-sm font-medium text-slate-700">RG</label>
+                                <div class="flex items-center mt-1 gap-2">
+                                    <input type="text" id="depoente_rg_numero" data-label="RG (Número)" class="form-input block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Apenas números">
+                                    <span class="text-slate-500 font-bold">-</span>
+                                    <input type="text" id="depoente_rg_digito" maxlength="1" class="form-input block w-16 border-slate-300 rounded-lg shadow-sm text-center" placeholder="Dígito">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="depoente_estado_rg" class="block text-sm font-medium text-slate-700">Estado</label>
+                                <select id="depoente_estado_rg" class="form-select mt-1 block w-full border-slate-300 rounded-lg shadow-sm">
+                                    <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option>
+                                    <option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option>
+                                    <option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option>
+                                    <option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                                    <option>RS</option><option>RO</option><option>RR</option><option>SC</option><option selected>SP</option>
+                                    <option>SE</option><option>TO</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="depoente_cpf" class="block text-sm font-medium text-slate-700">CPF</label>
+                            <input type="text" id="depoente_cpf" data-label="CPF" maxlength="14" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+
+                    <div class="space-y-5 pt-4">
+                         <h2 class="text-xl font-semibold">Dados da Ocorrência</h2>
+                        <div><label for="q1" class="block text-sm font-medium text-slate-700">1. Em qual Unidade de Polícia (Batalhão) trabalha o depoente?</label>
+                             <input type="text" id="q1" data-label="Unidade de Polícia" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: 3ºBPM/M"></div>
+                        
+                        <div><label for="q2" class="block text-sm font-medium text-slate-700">2. Viatura e composição da guarnição do depoente?</label>
+                             <textarea id="q2" data-label="Viatura e guarnição" rows="2" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Viatura M-03016, com Sd Maico Andre Mateus e Sd Gabriel Campos dos Santos"></textarea></div>
+
+                        <div><label for="q3" class="block text-sm font-medium text-slate-700">3. Como soube da ocorrência? Onde estava e que horas eram?</label>
+                             <textarea id="q3" data-label="Como soube da ocorrência" rows="2" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Via rádio, por volta das 23:50, em patrulhamento"></textarea></div>
+
+                        <div><label for="q4" class="block text-sm font-medium text-slate-700">4. Endereço dos fatos e tempo de deslocamento?</label>
+                             <input type="text" id="q4" data-label="Endereço e deslocamento" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Avenida Eulalia, 430, Jabaquara. Cerca de três minutos."></div>
+
+                        <div><label for="q5" class="block text-sm font-medium text-slate-700">5. Com o que se deparou ao chegar ao local?</label>
+                             <textarea id="q5" data-label="O que se deparou" rows="3" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Viatura M-03019 e o corpo do indivíduo Igor Queiroz..."></textarea></div>
+
+                        <div><label for="q6" class="block text-sm font-medium text-slate-700">6. Foi testemunha presencial da intervenção?</label>
+                             <input type="text" id="q6" data-label="Testemunha presencial" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Não."></div>
+
+                        <div><label for="q7" class="block text-sm font-medium text-slate-700">7. Havia testemunhas civis no local?</label>
+                             <input type="text" id="q7" data-label="Testemunhas civis" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Não."></div>
+
+                        <div><label for="q8" class="block text-sm font-medium text-slate-700">8. O que o(s) policial(ais) da viatura envolvida relataram?</label>
+                             <textarea id="q8" data-label="Relato dos policiais" rows="3" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Que depararam com Igor acionando o alarme de um Ford/Ka..."></textarea></div>
+                        
+                        <div><label for="q9" class="block text-sm font-medium text-slate-700">9. Quais policiais da viatura envolvida efetuaram disparos? Usavam câmeras?</label>
+                             <input type="text" id="q9" data-label="Disparos e câmeras" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Todos da viatura M-03019. Sim, câmeras acionadas."></div>
+
+                        <div><label for="q10" class="block text-sm font-medium text-slate-700">10. Quais as primeiras providências que realizou no local?</label>
+                             <textarea id="q10" data-label="Primeiras providências" rows="2" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: Colher informações dos policiais envolvidos."></textarea></div>
+                        
+                        <div><label for="q11" class="block text-sm font-medium text-slate-700">11. Equipes de socorro e informação sobre o óbito?</label>
+                             <input type="text" id="q11" data-label="Socorro e óbito" class="form-input mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: UR-01101, Cb Gonçalves. Óbito no Hospital Saboya."></div>
+
+                        <div><label for="q12" class="block text-sm font-medium text-slate-700">12. Alguma outra informação relevante?</label>
+                             <textarea id="q12" data-label="Informação relevante" rows="2" class="form-textarea mt-1 block w-full border-slate-300 rounded-lg shadow-sm" placeholder="Ex: O veículo Ford/Ka era produto de roubo e o indivíduo era procurado."></textarea></div>
+                    </div>
+                    <div class="pt-4">
+                        <button type="button" id="generate-btn" class="w-full flex justify-center items-center gap-3 py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-60">
+                            <span id="btn-text">Gerar Termo de Depoimento</span>
+                            <div id="loader" class="loader hidden"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Area de Saída -->
+            <div class="lg:w-1/2">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg sticky top-8">
+                    <h2 class="text-2xl font-semibold mb-6 border-b border-slate-200 pb-4">Termo Gerado</h2>
+                    <div id="report-output" class="bg-slate-50 p-5 rounded-lg border border-slate-200 h-[400px] lg:h-[500px] overflow-y-auto whitespace-pre-wrap text-slate-700">
+                        <p class="italic text-slate-500">O Termo de Depoimento gerado pela IA aparecerá aqui...</p>
+                    </div>
+                    
+                    <div id="export-actions" class="hidden mt-4 pt-4 border-t border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-600 mb-3 text-center">EXPORTAR</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button id="copy-btn" class="export-btn">📋 Copiar Texto</button>
+                            <button id="download-doc-btn" class="export-btn">📄 Baixar .doc</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
