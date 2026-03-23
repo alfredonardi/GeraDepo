@@ -16,33 +16,31 @@ document.querySelectorAll('.export-btn').forEach(btn => {
     btn.className += " w-full text-center py-2 px-3 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500";
 });
 
-// --- FUNÇÃO DE CHAMADA DA API ---
+// --- FUNÇÃO DE CHAMADA DA API (via Supabase Edge Function) ---
 async function callGeminiAPI(prompt) {
-    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-    const payload = { contents: chatHistory };
-    const apiKey = "AIzaSyD_7F2qSFVXLx8iuEn8RGTxCTw_eDvrmsY"; 
-
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    // URL do Supabase
+    const supabaseUrl = 'https://ejgiuoddnggzhcvlbpor.supabase.co';
+    const functionUrl = `${supabaseUrl}/functions/v1/gemini`;
     
-    const response = await fetch(apiUrl, {
+    const response = await fetch(functionUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ prompt })
     });
 
     if (!response.ok) {
         const errorBody = await response.json();
-        const errorMessage = errorBody.error?.message || JSON.stringify(errorBody);
-        throw new Error(`Erro na API: ${response.statusText}. Detalhes: ${errorMessage}`);
+        const errorMessage = errorBody.error || JSON.stringify(errorBody);
+        throw new Error(`Erro na solicitação: ${response.statusText}. Detalhes: ${errorMessage}`);
     }
 
     const result = await response.json();
     
-    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
-        return result.candidates[0].content.parts[0].text.trim();
+    if (result.success && result.text) {
+        return result.text;
     } else {
-        console.error("Estrutura de resposta inesperada da API:", result);
-        throw new Error('A resposta da IA não contém o texto esperado.');
+        console.error("Erro ao processar resposta:", result);
+        throw new Error(result.error || 'A resposta da IA não contém o texto esperado.');
     }
 }
 
