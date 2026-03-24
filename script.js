@@ -16,11 +16,9 @@ document.querySelectorAll('.export-btn').forEach(btn => {
     btn.className += " w-full text-center py-2 px-3 border border-slate-300 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500";
 });
 
-// --- FUNÇÃO DE CHAMADA DA API (via Supabase Edge Function) ---
+// --- FUNÇÃO DE CHAMADA DA API (via Netlify Function) ---
 async function callGeminiAPI(prompt) {
-    // URL do Supabase
-    const supabaseUrl = 'https://ejgiuoddnggzhcvlbpor.supabase.co';
-    const functionUrl = `${supabaseUrl}/functions/v1/gemini`;
+    const functionUrl = '/.netlify/functions/gemini';
     
     const response = await fetch(functionUrl, {
         method: 'POST',
@@ -28,13 +26,12 @@ async function callGeminiAPI(prompt) {
         body: JSON.stringify({ prompt })
     });
 
+    const result = await response.json().catch(() => null);
+
     if (!response.ok) {
-        const errorBody = await response.json();
-        const errorMessage = errorBody.error || JSON.stringify(errorBody);
+        const errorMessage = result?.error || `Falha ao chamar a IA (${response.status}).`;
         throw new Error(`Erro na solicitação: ${response.statusText}. Detalhes: ${errorMessage}`);
     }
-
-    const result = await response.json();
     
     if (result.success && result.text) {
         return result.text;
@@ -144,6 +141,7 @@ O produto final deve ser um documento de texto único, pronto para ser copiado, 
         exportActionsContainer.classList.remove('hidden');
     } catch (error) {
         console.error("Erro ao gerar relatório:", error);
+        currentReportText = '';
         reportOutput.innerHTML = `<p class="italic text-red-600"><b>Erro ao conectar com a IA.</b><br>${error.toString()}</p>`;
     } finally {
         generateBtn.disabled = false;

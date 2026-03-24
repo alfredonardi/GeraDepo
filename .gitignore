@@ -5,3 +5,6 @@ node_modules/
 .DS_Store
 *.doc
 supabase/.temp/
+
+# Local Netlify folder
+.netlify
